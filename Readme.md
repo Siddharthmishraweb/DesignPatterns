@@ -72,7 +72,7 @@
 
 ---
 
-
+---
 
 ### 🧱 **What is the Builder Pattern (in simple terms)?**
 
@@ -135,4 +135,162 @@ Use it when:
 * Constructing **database queries** step by step.
 * Setting up a **custom logging system** with different options.
 
+### Prototype Design Pattern
+The Prototype Design Pattern in Node.js is a creational pattern that allows you to create objects based on a template of an existing object through cloning. Here’s a breakdown of its components:
+
+### Definition:
+
+The Prototype pattern involves creating new objects by copying/cloning existing objects called prototypes. This pattern provides a way to instantiate new objects by copying an existing instance rather than creating new instances from scratch.
+
+### Use Case:
+
+* **Object Creation:** When you have objects that are similar but need to vary slightly without modifying the original object.
+* **Efficiency:** It can be used to avoid the overhead of initializing objects that are expensive to create.
+
+### When to Use:
+
+* Use the Prototype pattern when creating objects that are similar to existing objects.
+* Use it when the instantiation process is costly in terms of time/resources and you have a simpler way to copy an existing object.
+
+### When Not to Use:
+
+* When objects in your application are not similar or when each instance needs to be customized extensively.
+* If there is no clear advantage in copying existing objects over creating new ones from scratch.
+
+### Problems Solved:
+
+* **Problem Statement:** Suppose you have a complex object that takes a lot of time and resources to instantiate. You need multiple instances of this object with slight variations.
+* **Solution:** Use the Prototype pattern to clone the existing instance and modify it as needed, saving time and resources.
+
+### Code Example in Node.js:
+
+```javascript
+// Example of a prototype object
+class Sheep {
+  constructor(name, weight) {
+    this.name = name;
+    this.weight = weight;
+  }
+
+  clone() {
+    return new Sheep(this.name, this.weight);
+  }
+}
+
+// Usage example
+const originalSheep = new Sheep('Dolly', 50);
+const clonedSheep = originalSheep.clone();
+
+console.log(clonedSheep); // Output: Sheep { name: 'Dolly', weight: 50 }
+```
+
+In this example:
+
+* We define a `Sheep` class that has a `clone` method to create a copy of itself.
+* `originalSheep` is an instance of `Sheep`.
+* `clonedSheep` is created by cloning `originalSheep`, effectively using the Prototype pattern.
+
+This pattern simplifies object creation by allowing you to copy existing instances, making it easier to manage and customize object creation processes in your Node.js applications.
+
+
+
+Here’s a **real-world problem statement** where the **Prototype Design Pattern** is highly applicable, especially in the context of a **Node.js** application:
+
+---
+
+### 💼 **Problem Statement (Real-World Scenario):**
+
+You are building a **document editing web application** (like Google Docs) in Node.js. Every time a user creates a **new document from a template** (e.g., resume, invoice, letter), the application has to:
+
+* Load the template from the database or disk,
+* Parse it,
+* Apply default styles,
+* Add default metadata like author, timestamps, etc.
+
+This process is **resource-intensive** and repeated often.
+
+You want to optimize this process so that instead of re-parsing and initializing every time, you can just **clone a pre-configured document object** and make small modifications as needed.
+
+---
+
+### ✅ **Solution Using Prototype Pattern:**
+
+Instead of building a new document from scratch, maintain a set of **pre-built template document objects** in memory and use the **Prototype pattern** to clone them quickly when needed.
+
+---
+
+### 💡 Benefits:
+
+* Improved **performance** by avoiding repeated expensive initializations.
+* Cleaner code for creating documents from templates.
+* Flexible cloning with minor customizations (e.g., change title or author).
+
+---
+
+### 🧪 Node.js Code Example:
+
+```javascript
+// Prototype class
+class DocumentTemplate {
+  constructor(type, content, styles, metadata) {
+    this.type = type;       // e.g., 'resume', 'invoice'
+    this.content = content;
+    this.styles = styles;
+    this.metadata = metadata;
+  }
+
+  clone() {
+    // Deep clone to avoid shared references
+    return new DocumentTemplate(
+      this.type,
+      JSON.parse(JSON.stringify(this.content)),
+      JSON.parse(JSON.stringify(this.styles)),
+      JSON.parse(JSON.stringify(this.metadata))
+    );
+  }
+}
+
+// Simulate existing templates
+const resumeTemplate = new DocumentTemplate(
+  'resume',
+  { sections: ['Summary', 'Experience', 'Education'] },
+  { font: 'Arial', color: 'black' },
+  { createdBy: 'System', timestamp: new Date() }
+);
+
+// User creates a new resume from the template
+function createUserResume(userName) {
+  const newResume = resumeTemplate.clone();
+  newResume.metadata.createdBy = userName;
+  newResume.metadata.timestamp = new Date();
+  return newResume;
+}
+
+// Example usage
+const user1Resume = createUserResume('Alice');
+console.log(user1Resume);
+
+const user2Resume = createUserResume('Bob');
+console.log(user2Resume);
+```
+
+---
+
+### ⚠️ When NOT to Use This:
+
+* If your documents/templates are extremely lightweight and can be generated on-the-fly with minimal cost.
+* If the object structure is very dynamic and doesn’t benefit from cloning.
+
+---
+
+### 🧠 Summary:
+
+| Aspect                  | Prototype Pattern in This Use Case                  |
+| ----------------------- | --------------------------------------------------- |
+| **Problem**             | Expensive document creation from templates          |
+| **Pattern**             | Clone prebuilt templates instead of re-initializing |
+| **Performance Benefit** | ✅ Less CPU, memory usage, faster response           |
+| **Code Simplicity**     | ✅ Cleaner and more modular creation logic           |
+
+---
 
